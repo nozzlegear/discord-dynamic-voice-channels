@@ -24,6 +24,7 @@ intents = discord.Intents(
 class Bot(commands.Bot):
     def __init__(self):
         super().__init__(
+            command_prefix="!",  # Added to fix deprecation warning
             intents=intents,
             activity=discord.Game("click me and invite me again for slash commands"),
             allowed_mentions=discord.AllowedMentions.none()
