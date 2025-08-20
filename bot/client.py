@@ -26,7 +26,7 @@ class Bot(commands.Bot):
         super().__init__(
             command_prefix="!",  # Added to fix deprecation warning
             intents=intents,
-            activity=discord.Game("click me and invite me again for slash commands"),
+            activity=discord.Game("with the space between worlds"),
             allowed_mentions=discord.AllowedMentions.none()
         )
 
