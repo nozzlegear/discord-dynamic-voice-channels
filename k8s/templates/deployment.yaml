@@ -35,7 +35,7 @@ spec:
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: IfNotPresent
           env:
-            - name: DISCORD_TOKEN
+            - name: BOT_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
