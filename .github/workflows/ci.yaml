@@ -28,7 +28,7 @@ jobs:
       run: podman login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
 
     - name: Checkout branch
-      uses: actions/checkout@v4
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
     - name: Build container image
       run: podman build -t "$BUILD_IMAGE_REPO:$BUILD_IMAGE_TAG" .
@@ -55,10 +55,10 @@ jobs:
 
     steps:
     - name: Checkout branch
-      uses: actions/checkout@v4
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
     - name: Copy kubernetes config to host
-      uses: appleboy/scp-action@master
+      uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
       with:
         host: ${{ secrets.SSH_HOST }}
         port: ${{ secrets.SSH_PORT }}
@@ -71,7 +71,7 @@ jobs:
         overwrite: true
 
     - name: Update kubernetes pod on host
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
       with:
         host: ${{ secrets.SSH_HOST }}
         port: ${{ secrets.SSH_PORT }}
