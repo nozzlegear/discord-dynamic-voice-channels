@@ -22,7 +22,12 @@ jobs:
 
     steps:
     - name: Install packages
-      run: sudo apt-get update && sudo apt-get install podman fish && sudo snap install helm
+      run: sudo apt-get update && sudo apt-get install podman
+
+    - name: Install Helm
+      uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4.3.0
+      with:
+       version: 'latest'
 
     - name: Log in to registry
       run: podman login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
