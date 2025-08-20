@@ -1,0 +1,84 @@
+name: Deployment Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+# Cancel any in-progress build/test runs
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUILD_IMAGE_TAG: "${{ github.run_number }}"
+  BUILD_IMAGE_REPO: "ghcr.io/nozzlegear/dijonamic-voice-channels"
+
+jobs:
+  build:
+    name: "Build and push"
+    runs-on: ubuntu-latest
+    environment: "Build Environment"
+
+    steps:
+    - name: Install packages
+      run: sudo apt-get update && sudo apt-get install podman fish && sudo snap install helm
+
+    - name: Log in to registry
+      run: podman login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Checkout branch
+      uses: actions/checkout@v4
+
+    - name: Build container image
+      run: podman build -t "$BUILD_IMAGE_REPO:$BUILD_IMAGE_TAG" .
+
+    - name: Push container image
+      run: podman image push "$BUILD_IMAGE_REPO:$BUILD_IMAGE_TAG"
+
+    - name: Create Helm file
+      run: |
+        helm template dijonamic \
+          ./k8s \
+          --values k8s/values.yaml \
+          --set "image.repository=$BUILD_IMAGE_REPO" \
+          --set "image.tag=$BUILD_IMAGE_TAG" \
+          -n bots \
+          > "dijonamic.k8s.yaml"
+
+  deploy:
+    name: "Deploy to host"
+    runs-on: ubuntu-latest
+    environment: "Deployment Environment"
+    # Do not run this job until the build job completes
+    needs: build
+
+    steps:
+    - name: Checkout branch
+      uses: actions/checkout@v4
+
+    - name: Copy kubernetes config to host
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        # Use a host fingerprint to ensure we always connect to the same server
+        fingerprint: ${{ secrets.SSH_FINGERPRINT }}
+        source: "dijonamic.k8s.yaml"
+        target: "sites-enabled/dijonamic/"
+        overwrite: true
+
+    - name: Update kubernetes pod on host
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        # Use a host fingerprint to ensure we always connect to the same server
+        fingerprint: ${{ secrets.SSH_FINGERPRINT }}
+        # Stop on errors
+        script_stop: true
+        script: "cd sites-enabled/dijonamic; and podman kube play --replace dijonamic.k8s.yaml"
