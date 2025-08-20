@@ -3,6 +3,10 @@ bot/ext/__pycache__/
 bot/utils/__pycache__/
 data/
 pythonvenv/
+k8s/
+.git/
+.github/
 .env
 .azure
 Dockerfile
+*.yaml
