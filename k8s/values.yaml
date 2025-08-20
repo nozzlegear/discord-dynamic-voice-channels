@@ -1,9 +1,6 @@
 app:
   name: dijonamic-bot
 
-image:
-  repository: ghcr.io/you/dijonamic-bot
-
 pvc:
   name: dijonamic-data
   size: 250Mi
@@ -22,6 +19,6 @@ resources:
 
 probes:
   liveness:
-    enabled: true
-    initialDelaySeconds: 30
+    enabled: false # Liveness check isn't working at the moment and continuously restarts the container, must diagnose
+    initialDelaySeconds: 10
     periodSeconds: 20
