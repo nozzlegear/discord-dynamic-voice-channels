@@ -1,0 +1,27 @@
+app:
+  name: dijonamic-bot
+
+image:
+  repository: ghcr.io/you/dijonamic-bot
+
+pvc:
+  name: dijonamic-data
+  size: 250Mi
+  storageClass: "" # leave empty to use the kubernetes cluster's default
+
+secrets:
+  name: dijonamic-secrets # must exist in the release namespace with key `discord_token`
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+probes:
+  liveness:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 20
