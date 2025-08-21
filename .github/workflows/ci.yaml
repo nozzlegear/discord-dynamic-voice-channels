@@ -55,7 +55,13 @@ jobs:
           --set "image.repository=$BUILD_IMAGE_REPO" \
           --set "image.tag=$BUILD_IMAGE_TAG" \
           -n bots \
-          > "dijonamic.k8s.yaml"
+          > dijonamic.k8s.yaml
+
+    - name: Upload Helm file
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: Helm file
+        path: dijonamic.k8s.yaml
 
   deploy:
     name: "Deploy to host"
