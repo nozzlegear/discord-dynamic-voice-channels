@@ -77,6 +77,13 @@ jobs:
         name: Helm file
         path: ./
 
+    - name: Debug SSH connection
+      run: |
+        echo "Getting fingerprints from host..."
+        ssh-keyscan -t ed25519 ${{ secrets.HOST }} 2>/dev/null | ssh-keygen -lf -
+        ssh-keyscan -t ecdsa ${{ secrets.HOST }} 2>/dev/null | ssh-keygen -lf -
+        ssh-keyscan -t rsa ${{ secrets.HOST }} 2>/dev/null | ssh-keygen -lf -
+
     - name: Copy kubernetes config to host
       uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
       with:
