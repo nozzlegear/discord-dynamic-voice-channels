@@ -71,8 +71,11 @@ jobs:
     needs: build
 
     steps:
-    - name: Checkout branch
-      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+    - name: Download artifacts
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      with:
+        name: Helm file
+        path: ./
 
     - name: Copy kubernetes config to host
       uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
